@@ -31,7 +31,9 @@ impl crate::RustAutoGui {
             if !debug_path.exists() {
                 match fs::create_dir_all(debug_path) {
                     Ok(_) => {
-                        println!("Created a debug folder in your root for saving segmented template images");
+                        println!(
+                            "Created a debug folder in your root for saving segmented template images"
+                        );
                         match image.save("debug/screen_capture.png") {
                             Ok(_) => (),
                             Err(x) => println!("{}", x),
@@ -58,7 +60,7 @@ impl crate::RustAutoGui {
 
         let locations_ajusted: Vec<(u32, u32, f32)> = locations
             .iter()
-            .map(|(mut x, mut y, corr)| {
+            .map(|&(mut x, mut y, ref corr)| {
                 x = x + template.borrow().region.0 + (template.borrow().width / 2);
                 y = y + template.borrow().region.1 + (template.borrow().height / 2);
                 (x, y, *corr)

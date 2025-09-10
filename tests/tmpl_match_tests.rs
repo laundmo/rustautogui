@@ -1,10 +1,12 @@
+#![allow(clippy::too_many_arguments)]
+
 // run with cargo test --tests --release -- --nocapture
 
 #[cfg(feature = "dev")]
 pub mod tmpl_match_tests {
     use rustautogui::core::template_match::open_cl::OclVersion;
     use rustautogui::core::template_match::*;
-    use rustautogui::data::{opencl::KernelStorage, opencl::*, PreparedData};
+    use rustautogui::data::{PreparedData, opencl::KernelStorage, opencl::*};
     use rustautogui::imgtools;
 
     #[test]

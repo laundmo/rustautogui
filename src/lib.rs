@@ -1,4 +1,4 @@
-#![allow(unused_doc_comments, unused_imports)]
+#![allow(unused_doc_comments, unused_imports, clippy::too_many_arguments)]
 #![doc = include_str!("../README.md")]
 
 #[cfg(all(feature = "lite", feature = "opencl"))]
@@ -36,7 +36,7 @@ use std::{collections::HashMap, env};
 use core::template_match;
 use core::{
     keyboard::Keyboard,
-    mouse::{mouse_position, Mouse, MouseScroll},
+    mouse::{Mouse, MouseScroll, mouse_position},
     screen::Screen,
 };
 
@@ -44,10 +44,10 @@ use core::{
 #[cfg(feature = "opencl")]
 use crate::data::{DevicesInfo, OpenClData};
 #[cfg(feature = "opencl")]
-use ocl::{enums, Buffer, Context, Kernel, Program, Queue};
+use ocl::{Buffer, Context, Kernel, Program, Queue, enums};
 
-pub use core::mouse::mouse_position::print_mouse_position;
 pub use core::mouse::MouseClick;
+pub use core::mouse::mouse_position::print_mouse_position;
 
 #[cfg(not(feature = "lite"))]
 const DEFAULT_ALIAS: &str = "default_rsgui_!#123#!";

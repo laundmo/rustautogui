@@ -1,7 +1,7 @@
 use super::get_keymap_key;
 use crate::errors::AutoGuiError;
 use std::{collections::HashMap, ffi::CString, process::Command, thread, time::Duration};
-use x11::xlib::{CurrentTime, XFlush, XKeysymToKeycode, XStringToKeysym, _XDisplay};
+use x11::xlib::{_XDisplay, CurrentTime, XFlush, XKeysymToKeycode, XStringToKeysym};
 use x11::xtest::XTestFakeKeyEvent;
 /// main struct for interacting with keyboard. Keymap is generated upon intialization.
 /// screen is stored from Screen struct, where pointer for same screen object is used across the code
@@ -17,10 +17,7 @@ impl Keyboard {
         let is_us_layout: bool = Self::is_us_layout();
 
         let keymap = Keyboard::create_keymap(is_us_layout);
-        Self {
-            keymap,
-            screen,
-        }
+        Self { keymap, screen }
     }
 
     pub fn key_down(&self, key: &str) -> Result<(), AutoGuiError> {
@@ -41,13 +38,17 @@ impl Keyboard {
 
     /// Function that presses key down. When sending key, press key down and release key is executed
     unsafe fn press_key(&self, keycode: u32) {
-        XTestFakeKeyEvent(self.screen, keycode, 1, CurrentTime);
-        XFlush(self.screen);
+        unsafe {
+            XTestFakeKeyEvent(self.screen, keycode, 1, CurrentTime);
+            XFlush(self.screen);
+        }
     }
     /// Function that releases key up. When sending key, press key down and release key is executed
     unsafe fn release_key(&self, keycode: u32) {
-        XTestFakeKeyEvent(self.screen, keycode, 0, CurrentTime);
-        XFlush(self.screen);
+        unsafe {
+            XTestFakeKeyEvent(self.screen, keycode, 0, CurrentTime);
+            XFlush(self.screen);
+        }
     }
 
     /// send a key by press down and release up
@@ -116,10 +117,9 @@ impl Keyboard {
             let key_cstring = key_cstring.as_ptr();
 
             let keysym = XStringToKeysym(key_cstring);
-            keysym_to_keycode2.entry(keysym).or_insert_with(|| {
-                
-                XKeysymToKeycode(self.screen, keysym) as u32
-            });
+            keysym_to_keycode2
+                .entry(keysym)
+                .or_insert_with(|| XKeysymToKeycode(self.screen, keysym) as u32);
             let keycode = keysym_to_keycode2[&keysym];
             self.press_key(keycode); //press shift
             self.send_key(scan_code);
@@ -135,25 +135,25 @@ impl Keyboard {
         let mut keysym_to_keycode = HashMap::new();
         let key_cstring = CString::new(value.clone())?;
         let key_cstring = key_cstring.as_ptr();
+        unsafe {
+            let keysym = XStringToKeysym(key_cstring);
 
-        let keysym = XStringToKeysym(key_cstring);
-
-        if keysym == 0 {
-            return Err(AutoGuiError::OSFailure(
-                "Failed to convert xstring to keysym. Keysym received is 0".to_string(),
-            ));
+            if keysym == 0 {
+                return Err(AutoGuiError::OSFailure(
+                    "Failed to convert xstring to keysym. Keysym received is 0".to_string(),
+                ));
+            }
+            keysym_to_keycode
+                .entry(keysym)
+                .or_insert_with(|| XKeysymToKeycode(self.screen, keysym) as u32);
+            let keycode = keysym_to_keycode[&keysym];
+            if keycode == 0 {
+                return Err(AutoGuiError::OSFailure(
+                    "Failed to convert keysym to keycode. Keycode received is 0".to_string(),
+                ));
+            }
+            Ok((keycode, shifted))
         }
-        keysym_to_keycode.entry(keysym).or_insert_with(|| {
-            
-            XKeysymToKeycode(self.screen, keysym) as u32
-        });
-        let keycode = keysym_to_keycode[&keysym];
-        if keycode == 0 {
-            return Err(AutoGuiError::OSFailure(
-                "Failed to convert keysym to keycode. Keycode received is 0".to_string(),
-            ));
-        }
-        Ok((keycode, shifted))
     }
 
     /// top level send character function that converts char to keycode and executes send key
@@ -195,8 +195,7 @@ impl Keyboard {
                 Some(value) => {
                     third_key = true;
 
-                    let value3 = self.get_keycode(&value)?;
-                    value3
+                    self.get_keycode(&value)?
                 }
                 None => (0, &false), // this value should never be pressed
             };
@@ -221,10 +220,7 @@ impl Keyboard {
     #[allow(unused_variables)]
     fn create_keymap(is_us_layout: bool) -> HashMap<String, (String, bool)> {
         let mut keysym_map: HashMap<String, (String, bool)> = HashMap::new();
-        keysym_map.insert(
-            String::from(" "),
-            (String::from("space"), false),
-        );
+        keysym_map.insert(String::from(" "), (String::from("space"), false));
         keysym_map.insert(String::from("!"), (String::from("exclam"), true));
         keysym_map.insert(String::from("\""), (String::from("quotedbl"), true));
         keysym_map.insert(String::from("#"), (String::from("numbersign"), true));
