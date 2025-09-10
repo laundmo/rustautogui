@@ -2,7 +2,7 @@ use super::opencl_v2;
 use crate::core::template_match::{compute_integral_images, sum_region};
 use crate::data::SegmentedData;
 use crate::data::{GpuMemoryPointers, KernelStorage};
-use image::{ImageBuffer, Luma};
+use image::{GrayImage, ImageBuffer, Luma};
 use ocl;
 use ocl::{Buffer, Context, Kernel, Program, Queue};
 
@@ -18,7 +18,7 @@ pub fn gui_opencl_ncc_template_match(
     kernel_storage: &KernelStorage,
     gpu_memory_pointers: &GpuMemoryPointers,
     precision: f32,
-    image: &ImageBuffer<Luma<u8>, Vec<u8>>,
+    image: &GrayImage,
     template_data: &SegmentedData,
     ocl_version: OclVersion,
 ) -> ocl::Result<Vec<(u32, u32, f32)>> {
@@ -129,7 +129,7 @@ pub fn gui_opencl_ncc(
     Ok(final_results)
 }
 
-pub fn compute_integral_images_ocl(image: &ImageBuffer<Luma<u8>, Vec<u8>>) -> (Vec<u64>, Vec<u64>) {
+pub fn compute_integral_images_ocl(image: &GrayImage) -> (Vec<u64>, Vec<u64>) {
     let (width, height) = image.dimensions();
     let image = image.as_raw();
     let mut integral_image = vec![0u64; (width * height) as usize];

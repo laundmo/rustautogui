@@ -68,8 +68,8 @@ pub mod tmpl_match_tests {
             threshold = Some(0.5);
             insert_str.push_str("custom");
         }
-        let template_data = segmented_ncc::prepare_template_picture(&template, &false, threshold);
-        let template_data = match template_data {
+        let prepared_data = segmented_ncc::prepare_template_picture(&template, &false, threshold);
+        let segmented_data = match prepared_data {
             PreparedData::Segmented(data) => data,
             _ => panic!(),
         };
@@ -79,7 +79,7 @@ pub mod tmpl_match_tests {
         } else {
             let start = std::time::Instant::now();
             locations =
-                segmented_ncc::fast_ncc_template_match(&main_image, 0.95, &template_data, &false);
+                segmented_ncc::fast_ncc_template_match(&main_image, 0.95, &segmented_data, &false);
             dur = start.elapsed().as_secs_f32();
         }
         let mut first_location = (0, 0, 0.0);
@@ -133,7 +133,7 @@ pub mod tmpl_match_tests {
         //////////////////////////////////////////////////////////////////////// OPENCL V1
 
         let template_data = segmented_ncc::prepare_template_picture(&template, &false, threshold);
-        let template_data = match template_data {
+        let segmented_data = match template_data {
             PreparedData::Segmented(x) => x,
             _ => panic!(),
         };
@@ -143,8 +143,8 @@ pub mod tmpl_match_tests {
             template_width,
             template_height,
             &queue,
-            &template_data.template_segments_slow,
-            &template_data.template_segments_fast,
+            &segmented_data.template_segments_slow,
+            &segmented_data.template_segments_fast,
         )
         .unwrap();
         let kernels = KernelStorage::new(
@@ -155,13 +155,13 @@ pub mod tmpl_match_tests {
             image_height,
             template_width,
             template_height,
-            template_data.template_segments_fast.len() as u32,
-            template_data.template_segments_slow.len() as u32,
-            template_data.segments_mean_fast,
-            template_data.segments_mean_slow,
-            template_data.segment_sum_squared_deviations_fast,
-            template_data.segment_sum_squared_deviations_slow,
-            template_data.expected_corr_fast,
+            segmented_data.template_segments_fast.len() as u32,
+            segmented_data.template_segments_slow.len() as u32,
+            segmented_data.segments_mean_fast,
+            segmented_data.segments_mean_slow,
+            segmented_data.segment_sum_squared_deviations_fast,
+            segmented_data.segment_sum_squared_deviations_slow,
+            segmented_data.expected_corr_fast,
             256,
         )
         .unwrap();
@@ -174,7 +174,7 @@ pub mod tmpl_match_tests {
             &gpu_pointers,
             0.95,
             &main_image,
-            &template_data,
+            &segmented_data,
             ocl_v,
         )
         .unwrap();
