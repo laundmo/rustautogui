@@ -15,7 +15,6 @@ impl crate::RustAutoGui {
     /// Searches for prepared template on screen.
     /// On windows only main monitor search is supported, while on linux, all monitors work.
     /// more details in README
-
     #[allow(unused_variables)]
     pub fn find_image_on_screen(
         &mut self,
@@ -179,8 +178,8 @@ impl crate::RustAutoGui {
         alias: impl ToString,
     ) -> Result<Option<Vec<(u32, u32, f32)>>, AutoGuiError> {
         self.current_template = alias.to_string();
-        let found_points = self.find_image_on_screen_and_move_mouse(precision, moving_time);
-        found_points
+
+        self.find_image_on_screen_and_move_mouse(precision, moving_time)
     }
 
     /// loops until stored image is found and moves mouse

@@ -24,7 +24,7 @@ pub fn gui_opencl_ncc_template_match(
 ) -> ocl::Result<Vec<(u32, u32, f32)>> {
     let (image_width, image_height) = image.dimensions();
 
-    let (image_integral, squared_image_integral) = compute_integral_images_ocl(&image);
+    let (image_integral, squared_image_integral) = compute_integral_images_ocl(image);
 
     let slow_expected_corr = precision * (template_data.expected_corr_slow - 0.001);
     match ocl_version {
@@ -43,7 +43,7 @@ pub fn gui_opencl_ncc_template_match(
             )?;
             gpu_results.retain(|&(_, _, value)| value >= slow_expected_corr);
             gpu_results.sort_by(|a, b| b.2.partial_cmp(&a.2).unwrap_or(std::cmp::Ordering::Equal));
-            return Ok(gpu_results);
+            Ok(gpu_results)
         }
         OclVersion::V2 => {
             let slow_segment_count = template_data.template_segments_slow.len() as i32;
@@ -55,7 +55,7 @@ pub fn gui_opencl_ncc_template_match(
             } else {
                 0
             };
-            return opencl_v2::gui_opencl_ncc_v2(
+            opencl_v2::gui_opencl_ncc_v2(
                 kernel,
                 &image_integral,
                 &squared_image_integral,
@@ -74,7 +74,7 @@ pub fn gui_opencl_ncc_template_match(
                 segments_processed_by_thread_slow,
                 max_workgroup_size as i32,
                 precision,
-            );
+            )
         }
     }
 }

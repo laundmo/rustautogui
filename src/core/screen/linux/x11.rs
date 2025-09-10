@@ -49,9 +49,9 @@ impl CaptureableScreen for X11Screen {
             let screen_height = XDisplayHeight(display, screen);
 
             Ok(X11Screen {
-                screen_width: screen_width,
-                screen_height: screen_height,
-                display: display,
+                screen_width,
+                screen_height,
+                display,
                 root_window: root,
                 #[cfg(not(feature = "lite"))]
                 pixel_data: vec![0u8; (screen_width * screen_height * 4) as usize],
@@ -147,7 +147,7 @@ impl CaptureableScreen for X11Screen {
             self.pixel_data = pixel_data;
             XDestroyImage(ximage);
         }
-        return Ok(());
+        Ok(())
     }
     #[cfg(not(feature = "lite"))]
     /// convert vector to Luma Imagebuffer

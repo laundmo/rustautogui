@@ -292,11 +292,9 @@ impl Mouse {
                 &mut win_y,
                 &mut child,
             ) != 0
-            {
-                if child != 0 {
+                && child != 0 {
                     return Ok(Some(child));
                 }
-            }
             Ok(None)
         }
     }

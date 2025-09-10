@@ -98,7 +98,7 @@ impl CaptureableScreen for WaylandScreen {
     #[cfg(not(feature = "lite"))]
     /// convert vector to RGBA ImageBuffer
     fn convert_bitmap_to_rgba(&self) -> Result<RgbaImage, AutoGuiError> {
-        self.get_img().map(|img| img.clone())
+        self.get_img().cloned()
     }
 
     fn create_keyboard(&mut self) -> crate::core::keyboard::Keyboard {

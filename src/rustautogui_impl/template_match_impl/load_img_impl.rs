@@ -87,7 +87,7 @@ impl crate::RustAutoGui {
         // FFT pads the image, does fourier transformations,
         // calculates conjugate and inverses transformation on template
         // Segmented creates vector of picture segments with coordinates, dimensions and average pixel value
-        let (template_data, match_mode_option) = match match_mode.clone() {
+        let (template_data, _) = match match_mode.clone() {
             MatchMode::FFT => {
                 let prepared_data =
                     PreparedData::FFT(template_match::fft_ncc::prepare_template_picture(

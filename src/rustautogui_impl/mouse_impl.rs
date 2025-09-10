@@ -122,12 +122,11 @@ impl crate::RustAutoGui {
         }
         #[cfg(target_os = "linux")]
         {
-            if moving_time < 0.5 {
-                if !self.suppress_warnings {
+            if moving_time < 0.5
+                && !self.suppress_warnings {
                     eprintln!("WARNING:Small moving time values may cause issues on mouse drag");
                 }
-            }
-            return self.mouse.drag_mouse(x as i32, y as i32, moving_time);
+            self.mouse.drag_mouse(x, y, moving_time)
         }
     }
 
@@ -165,12 +164,11 @@ impl crate::RustAutoGui {
         }
         #[cfg(target_os = "linux")]
         {
-            if moving_time < 0.5 {
-                if !self.suppress_warnings {
+            if moving_time < 0.5
+                && !self.suppress_warnings {
                     eprintln!("WARNING:Small moving time values may cause issues on mouse drag");
                 }
-            }
-            return self.mouse.drag_mouse(x as i32, y as i32, moving_time);
+            self.mouse.drag_mouse(x, y, moving_time)
         }
     }
 
@@ -198,12 +196,11 @@ impl crate::RustAutoGui {
         }
         #[cfg(target_os = "linux")]
         {
-            if moving_time < 0.5 {
-                if !self.suppress_warnings {
+            if moving_time < 0.5
+                && !self.suppress_warnings {
                     eprintln!("WARNING:Small moving time values may cause issues on mouse drag");
                 }
-            }
-            return self.mouse.drag_mouse(x as i32, y as i32, moving_time);
+            self.mouse.drag_mouse(x as i32, y as i32, moving_time)
         }
     }
 

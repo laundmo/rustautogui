@@ -131,7 +131,7 @@ impl RustAutoGui {
             suppress_warnings,
 
             #[cfg(feature = "opencl")]
-            opencl_data: opencl_data,
+            opencl_data,
         })
     }
 
@@ -208,13 +208,13 @@ impl RustAutoGui {
                 }
             }
         }
-        let used_device = context.devices()[best_device_index as usize];
+        let used_device = context.devices()[best_device_index];
         let queue = Queue::new(&context, used_device, None)?;
         let program_source = template_match::opencl_kernel::OCL_KERNEL;
         let program = Program::builder().src(program_source).build(&context)?;
 
         let opencl_data = OpenClData {
-            device_list: device_list,
+            device_list,
             ocl_program: program,
             ocl_context: context,
             ocl_queue: queue,
@@ -247,7 +247,7 @@ impl RustAutoGui {
     }
     #[cfg(feature = "opencl")]
     pub fn list_devices(&self) {
-        for (i, item) in (&self.opencl_data.device_list).iter().enumerate() {
+        for (i, item) in self.opencl_data.device_list.iter().enumerate() {
             println!("Device {i}:");
             println!("{}", item.print_device());
             println!("\n");
@@ -311,7 +311,7 @@ impl RustAutoGui {
     fn get_current_template(&self) -> Result<Rc<RefCell<Template>>, AutoGuiError> {
         self.template_data
             .get(&self.current_template)
-            .map(|rc| Rc::clone(rc))
+            .map(Rc::clone)
             .ok_or(AutoGuiError::AliasError(
                 "No template stored with selected alias".to_string(),
             ))
