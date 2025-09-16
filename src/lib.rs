@@ -89,8 +89,6 @@ pub struct RustAutoGui {
     #[cfg(not(feature = "lite"))]
     current_template: String,
     debug: bool,
-    template_height: u32,
-    template_width: u32,
     keyboard: Keyboard,
     mouse: Mouse,
     screen: Screen,
@@ -123,8 +121,6 @@ impl RustAutoGui {
             #[cfg(not(feature = "lite"))]
             current_template: DEFAULT_ALIAS.to_string(),
             debug,
-            template_width: 0,
-            template_height: 0,
             keyboard,
             mouse: mouse_struct,
             screen,
@@ -259,8 +255,6 @@ impl RustAutoGui {
         self.opencl_data = new_opencl_data;
 
         self.template_data = HashMap::new();
-        self.template_width = 0;
-        self.template_height = 0;
         self.current_template = DEFAULT_ALIAS.to_string();
 
         Ok(())

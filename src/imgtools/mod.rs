@@ -168,3 +168,20 @@ pub fn imagebuffer_to_vec<T: Copy + Primitive + 'static>(
     }
     vec
 }
+
+
+/// BGRA to RGBA pixel buffer conversion
+///
+/// Will likely benefit from compile time optimizations a lot, especially with SIMD instruction sets enabled.
+/// `RUSTFLAGS="-C target-cpu=x86-64-v3"` is a relatively safe bet, as according to steam hardware survey ~95% of people have it.
+pub fn bgra_to_rgba_inplace(buf: &mut [u8]) {
+    // adapted from: Source: https://users.rust-lang.org/t/the-fastest-way-to-copy-a-buffer-bgra-to-rgba/126651/11
+    let (chunked, _) = buf.as_chunks_mut::<4>();
+
+    for p in chunked {
+        let bgra = u32::from_be_bytes(*p);
+        let argb = bgra.swap_bytes();
+        let rgba = argb.rotate_left(8);
+        *p = rgba.to_be_bytes();
+    }
+}

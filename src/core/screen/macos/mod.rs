@@ -5,8 +5,8 @@ use crate::{errors::AutoGuiError, imgtools};
 
 #[cfg(not(feature = "lite"))]
 use image::{
-    imageops::{resize, FilterType::Nearest},
     GrayImage, ImageBuffer, Luma, Rgba,
+    imageops::{FilterType::Nearest, resize},
 };
 
 #[derive(Debug, Clone)]
@@ -113,20 +113,8 @@ impl crate::core::Screen for Screen {
                 "Failed to capture screen image".to_string(),
             ))?;
 
-        let pixel_data: Vec<u8> = image
-            .data()
-            .bytes()
-            .chunks(4)
-            .flat_map(|chunk| {
-                // TODO: use optimized bgra->rgba, take from waycap-rs
-                // reorder color components
-                if let &[b, g, r, a] = chunk {
-                    vec![r, g, b, a]
-                } else {
-                    unreachable!()
-                }
-            })
-            .collect();
+        let mut pixel_data: Vec<u8> = image.data().bytes();
+        imgtools::bgra_to_rgba_inplace(&mut pixel_data);
         self.screen_data.pixel_data = pixel_data;
         Ok(())
     }
