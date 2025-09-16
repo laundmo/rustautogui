@@ -29,10 +29,8 @@ crossbeam-channel = "*"
 [target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = { version = "0.23.2", features = ["highsierra"] }
 
-
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winuser", "windef"] }
-
 
 [features]
 default = ["full"]
@@ -40,6 +38,12 @@ full = ["rustfft", "num-complex", "rayon", "image"]
 lite = []
 opencl = ["ocl", "full"]
 dev = ["opencl"]
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package.'*']
+opt-level = 3
 
 
 [[example]]

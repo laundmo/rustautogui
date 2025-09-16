@@ -7,7 +7,10 @@ pub mod template_match;
 #[cfg(not(feature = "lite"))]
 use image::{GrayImage, ImageBuffer, Luma, Rgba, RgbaImage};
 
-use crate::core::{keyboard::Keyboard, mouse::Mouse};
+use crate::core::{
+    keyboard::{Keyboard, linux::x11::X11Keyboard},
+    mouse::Mouse,
+};
 #[cfg(not(feature = "lite"))]
 use crate::errors::AutoGuiError;
 

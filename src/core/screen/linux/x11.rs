@@ -1,6 +1,10 @@
 #[cfg(not(feature = "lite"))]
 extern crate image;
 extern crate x11;
+use crate::core::{
+    keyboard::{Keyboard, linux::x11::X11Keyboard},
+    mouse::{Mouse, linux::X11Mouse},
+};
 #[cfg(not(feature = "lite"))]
 use crate::errors::ImageProcessingError;
 use crate::{core::CaptureableScreen, errors::AutoGuiError, imgtools};
@@ -11,10 +15,9 @@ use image::{GrayImage, ImageBuffer, Luma, Rgba, RgbaImage};
 use rayon::prelude::*;
 use std::ptr;
 use x11::xlib::{
-    XCloseDisplay, XDefaultScreen, XDestroyImage, XDisplayHeight, XDisplayWidth, XGetImage,
-    XOpenDisplay, XRootWindow, ZPixmap, _XDisplay,
+    _XDisplay, XCloseDisplay, XDefaultScreen, XDestroyImage, XDisplayHeight, XDisplayWidth,
+    XGetImage, XOpenDisplay, XRootWindow, ZPixmap,
 };
-
 #[cfg(not(feature = "lite"))]
 const ALLPLANES: u64 = 0xFFFFFFFFFFFFFFFF;
 
@@ -38,7 +41,9 @@ impl CaptureableScreen for X11Screen {
             // to mouse and keyboard structs aswell
             let display: *mut _XDisplay = XOpenDisplay(ptr::null());
             if display.is_null() {
-                panic!("Error grabbing display. Unable to open X display. Possible x11 issue, check if it is activated and that you're not running wayland");
+                panic!(
+                    "Error grabbing display. Unable to open X display. Possible x11 issue, check if it is activated and that you're not running wayland"
+                );
             }
 
             // get root window
@@ -180,11 +185,11 @@ impl CaptureableScreen for X11Screen {
         .ok_or(ImageProcessingError::new("Failed conversion to RGBa").into())
     }
 
-    fn create_keyboard(&mut self) -> crate::core::keyboard::Keyboard {
-        crate::core::keyboard::Keyboard::new(self.display)
+    fn create_keyboard(&mut self) -> Keyboard {
+        Keyboard::X11(X11Keyboard::new(self.display))
     }
 
-    fn create_mouse(&mut self) -> crate::core::mouse::Mouse {
-        crate::core::mouse::Mouse::new(self.display, self.root_window)
+    fn create_mouse(&mut self) -> Mouse {
+        Mouse::X11(X11Mouse::new(self.display, self.root_window))
     }
 }
