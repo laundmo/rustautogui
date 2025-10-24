@@ -272,8 +272,10 @@ impl crate::RustAutoGui {
         let match_mode = template.match_mode.clone().ok_or(ImageProcessingError::new("No template chosen and no template data prepared. Please run load_and_prepare_template before searching image on screen"))?;
         let found_locations: Vec<(u32, u32, f32)> = match match_mode {
             MatchMode::FFT => {
-                println!("Running FFT mode");
-                let data = match &template.prepared_data {
+                if self.debug {
+                    println!("Running FFT mode");
+                }
+                let data = match &self.template_data.prepared_data {
                     PreparedData::FFT(data) => data,
                     _ => Err(ImageProcessingError::new(
                         "error in prepared data type. Matchmode does not match prepare data type",
@@ -287,8 +289,10 @@ impl crate::RustAutoGui {
                     .collect()
             }
             MatchMode::Segmented => {
-                println!("Running Segmented mode");
-                let data = match &template.prepared_data {
+                if self.debug {
+                    println!("Running Segmented mode");
+                }
+                let data = match &self.template_data.prepared_data {
                     PreparedData::Segmented(data) => data,
                     _ => Err(ImageProcessingError::new(
                         "error in prepared data type. Matchmode does not match prepare data type",
