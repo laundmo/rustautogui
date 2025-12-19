@@ -6,8 +6,8 @@ fn main() {
     dbg!(ag.get_screen_size());
     ag.store_template_from_file(
         "./tests/testing_images/algorithm_tests/Socket_template1.png",
-        Some((2200, 500, 600, 500)),
-        MatchMode::SegmentedOclV2,
+        Some((500, 500, 1500, 1500)),
+        MatchMode::Segmented,
         "socket1",
     )
     .unwrap();

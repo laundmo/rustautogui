@@ -275,7 +275,7 @@ impl crate::RustAutoGui {
                 if self.debug {
                     println!("Running FFT mode");
                 }
-                let data = match &self.template_data.prepared_data {
+                let data = match &template.prepared_data {
                     PreparedData::FFT(data) => data,
                     _ => Err(ImageProcessingError::new(
                         "error in prepared data type. Matchmode does not match prepare data type",
@@ -292,7 +292,7 @@ impl crate::RustAutoGui {
                 if self.debug {
                     println!("Running Segmented mode");
                 }
-                let data = match &self.template_data.prepared_data {
+                let data = match &template.prepared_data {
                     PreparedData::Segmented(data) => data,
                     _ => Err(ImageProcessingError::new(
                         "error in prepared data type. Matchmode does not match prepare data type",

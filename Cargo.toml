@@ -23,7 +23,7 @@ rand = "0.9"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 x11 = "2.21"
-waycap-rs = { git = "https://github.com/adonca2203/waycap-rs", rev = "bd32130e614f611b256c5b6a137b15403802d157" }
+waycap-rs = "^2.1.2"
 crossbeam-channel = "*"
 
 [target.'cfg(target_os = "macos")'.dependencies]
